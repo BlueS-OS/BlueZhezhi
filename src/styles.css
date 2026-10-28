@@ -129,6 +129,27 @@ body::before {
   border-radius: 2px;
 }
 
+.topbar-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.switch {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border: 1px solid var(--rule);
+  padding: 5px 9px;
+  border-radius: 2px;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.switch:hover { color: var(--vermilion); border-color: var(--vermilion); }
+
 /* ---------------------------------------------------------------- */
 /* hero                                                              */
 /* ---------------------------------------------------------------- */

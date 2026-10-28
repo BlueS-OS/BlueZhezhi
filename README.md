@@ -2,6 +2,10 @@
 
 > La interfaz se llama **Zhezhi**. El nombre **BlueZhezhi** solo aparece dentro del
 > MP4, como firma de los metadatos (`©too`, `©cmt`, `©cprt` y handler).
+>
+> Hay una segunda piel, **Phrolova · gabinete de partituras**, en `/phrolova/`.
+> Comparte motor y garantías; cambia la paleta, los textos y la firma que escribe
+> en el MP4 (**BluePhrolova**).
 
 Utilidad **local** que reescribe el contenedor de un MP4 antes de subirlo a TikTok.
 No recodifica si el vídeo ya es H.264/HEVC: trabaja a nivel de átomos (boxes).
@@ -10,10 +14,32 @@ El nombre viene de Zhezhi (折枝), la pintora por encargo de *Wuthering Waves*:
 de jade blanco, tinta, malaquita, azurita y bermellón. El taller no pinta nada por
 ti, solo **protege el trazo** para que la plataforma no lo repinte.
 
-**En línea:** <https://blues-os.github.io/ZhezhiUploader/> · **En local:** `.\start.cmd`
-(la versión local funciona sin conexión y sin depender de nadie).
+La segunda piel es **Phrolova**, la directora de orquesta del Fractsidus: carmesí,
+negro, lirio de araña y papel pautado. Misma función, otra partitura.
+
+**En línea:** <https://blues-os.github.io/ZhezhiUploader/> ·
+**Phrolova:** <https://blues-os.github.io/ZhezhiUploader/phrolova/> ·
+**En local:** `.\start.cmd` (la versión local funciona sin conexión y sin depender
+de nadie).
 
 ![Interfaz de Zhezhi: papel de jade, tinta y sellos bermellón](docs/preview.png)
+
+## Dos versiones, un mismo motor
+
+| | Zhezhi | Phrolova |
+|---|---|---|
+| URL | `/` | `/phrolova/` |
+| Paleta | papel de jade, tinta, bermellón | escenario negro, carmesí, hueso, oro viejo |
+| Motivo | pincel, sello 折 | lirio de araña, papel pautado, sello 洛 |
+| Firma en el MP4 | `BlueZhezhi-v2.0.3` | `BluePhrolova-v2.0.3` |
+| Handler de pista | `BlueZhezhi-coded` | `BluePhrolova-coded` |
+| Sufijo de descarga | `_zhezhi.mp4` | `_phrolova.mp4` |
+
+Ambas comparten `src/mp4.js`, `src/ffmpeg.js` y `src/app.js`; cada `index.html`
+declara su identidad en `window.__BZ__` antes de cargar el módulo. Las dos se
+enlazan desde la cabecera.
+
+![Interfaz de Phrolova: carmesí, negro y lirio de araña](docs/preview-phrolova.png)
 
 > **Aviso honesto:** el modo sello deja el MP4 inconsistente a propósito. Funciona
 > hoy y con el archivo de referencia que se comparó, pero depende de cómo valide
@@ -54,26 +80,29 @@ vídeo nunca sale del navegador.
 
 1. Arrastra un vídeo (MP4, MOV, MKV, WebM…).
 2. Elige modo:
-   - **Sello Zhezhi** (por defecto): aplica el descuadre de tablas que provoca
-     el efecto. Es el modo que impide que la plataforma rebaje la resolución.
+   - **Sello Zhezhi / Sello Phrolova** (por defecto): aplica el descuadre de tablas
+     que provoca el efecto. Es el modo que impide que la plataforma rebaje la
+     resolución.
    - **Papel limpio**: solo normaliza el contenedor, sin descuadrar tablas. Úsalo si
      el vídeo tiene que publicarse sí o sí.
-3. Pulsa **Sellar el vídeo** y descarga el MP4.
+3. Pulsa **Sellar el vídeo** (en Phrolova, **Sellar la partitura**) y descarga el MP4.
 
-El archivo de salida termina en `_zhezhi.mp4`.
+El archivo de salida termina en `_zhezhi.mp4` (o `_phrolova.mp4` en la versión
+Phrolova).
 
 ### Firma en los metadatos
 
-| Campo | Valor |
-|---|---|
-| Writing application (`©too`) | `BlueZhezhi-v2.0.3` |
-| Copyright (`©cprt`) | `BlueZhezhi` |
-| Comment (`©cmt`) | `BlueZhezhi` |
-| Compressor name (en `stsd`) | `BlueZhezhi-v2.0.3` |
-| Handler de pista (`hdlr`) | `BlueZhezhi-coded` |
+| Campo | Zhezhi | Phrolova |
+|---|---|---|
+| Writing application (`©too`) | `BlueZhezhi-v2.0.3` | `BluePhrolova-v2.0.3` |
+| Copyright (`©cprt`) | `BlueZhezhi` | `BluePhrolova` |
+| Comment (`©cmt`) | `BlueZhezhi` | `BluePhrolova` |
+| Compressor name (en `stsd`) | `BlueZhezhi-v2.0.3` | `BluePhrolova-v2.0.3` |
+| Handler de pista (`hdlr`) | `BlueZhezhi-coded` | `BluePhrolova-coded` |
 
-Se puede cambiar con las opciones `tagName` / `tagComment`, o desactivar del todo
-desmarcando «Firmar la salida con el nombre del taller».
+Se puede cambiar con las opciones `tagName` / `tagComment` / `handlerName`, o
+desactivar del todo desmarcando «Firmar la salida con el nombre del taller»
+(en Phrolova, «…del gabinete»).
 
 ---
 
@@ -107,7 +136,7 @@ archivo
 
 Añade a lo anterior:
 
-- handlers de pista renombrados (`BlueZhezhi-coded`),
+- handlers de pista renombrados (`BlueZhezhi-coded` o `BluePhrolova-coded`),
 - nombre del compresor en el `stsd` de vídeo (no en el de audio),
 - etiquetas `©too` / `©cmt` / `©cprt` con `version/flags = 1` (no estándar),
 - edit list vacía de **16 ticks** en vídeo; en audio solo se pone a cero el
@@ -167,15 +196,18 @@ que el sello parece evitar es el *downscale*, no necesariamente el *transcode*.
 
 ```
 zhezhi/
-├─ index.html          UI (papel y tinta)
-├─ assets/             favicon SVG + PNG y apple-touch-icon
-├─ docs/               captura de pantalla usada en este README
+├─ index.html          UI Zhezhi (papel y tinta)
+├─ phrolova/
+│  ├─ index.html       UI Phrolova (carmesí y negro)
+│  └─ styles.css       paleta Phrolova (escenario, lirio, papel pautado)
+├─ assets/             favicons SVG + PNG y apple-touch-icon de ambas versiones
+├─ docs/               capturas usadas en este README
 ├─ serve.ps1           servidor estático (HttpListener, sin dependencias)
 ├─ start.cmd           arranque + abrir navegador
 ├─ src/
 │  ├─ mp4.js           parser, sellador y verificador de MP4
 │  ├─ ffmpeg.js        wrapper de FFmpeg.wasm + fallback remux/transcode
-│  ├─ app.js           lógica de la UI
+│  ├─ app.js           lógica de la UI (parametrizada por window.__BZ__)
 │  └─ styles.css       paleta Zhezhi (papel de jade, tinta, bermellón)
 ├─ vendor/
 │  ├─ worker.js        worker de @ffmpeg/ffmpeg 0.12.10 (mismo origen)
@@ -183,13 +215,12 @@ zhezhi/
 │  └─ errors.js
 ├─ analysis/           página de análisis estructural (los MP4 de referencia no se incluyen)
 └─ test/
-   ├─ test.html        prueba del sellador con un MP4 real
-   ├─ sample.mp4
-   └─ sample.webm
+   └─ test.html        prueba del sellador con un MP4 real
 ```
 
 Abre `http://localhost:5173/test/test.html` para ver el informe del sellador,
-la verificación y dos reproductores (safe/compat).
+la verificación y dos reproductores (safe/compat). Necesita un MP4 de muestra en
+`test/`: no se incluye en el repositorio.
 
 ---
 
@@ -220,6 +251,7 @@ Opciones de `patchMp4`:
   tagOutput: true,
   tagName: "BlueZhezhi-v2.0.3",    // en compat se ajusta solo
   tagComment: "BlueZhezhi",        // en compat se ajusta solo
+  handlerName: "BlueZhezhi-coded", // handler de pista en compat
   forceBt709: true,
 }
 ```
@@ -281,5 +313,6 @@ válido y se comporta como cualquier subida normal.
 MIT. Haz lo que quieras con el código, pero sin garantía: el modo sello crea
 archivos deliberadamente inconsistentes y la plataforma puede rechazarlos.
 
-No está afiliado a Kuro Games, *Wuthering Waves* ni TikTok. Zhezhi y *Wuthering
-Waves* son propiedad de Kuro Games; este proyecto es un homenaje no oficial.
+No está afiliado a Kuro Games, *Wuthering Waves* ni TikTok. Zhezhi, Phrolova y
+*Wuthering Waves* son propiedad de Kuro Games; este proyecto es un homenaje no
+oficial.

@@ -51,6 +51,12 @@ try {
       $full = [System.IO.Path]::GetFullPath((Join-Path $root $path.TrimStart("/")))
       $rootFull = [System.IO.Path]::GetFullPath($root)
 
+      # /algo/ o /algo → /algo/index.html (igual que GitHub Pages)
+      if ((Test-Path -LiteralPath $full -PathType Container) -or $path.EndsWith("/")) {
+        $path = $path.TrimEnd("/") + "/index.html"
+        $full = [System.IO.Path]::GetFullPath((Join-Path $root $path.TrimStart("/")))
+      }
+
       if (-not $full.StartsWith($rootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
         $response.StatusCode = 403
         $bytes = [System.Text.Encoding]::UTF8.GetBytes("403")

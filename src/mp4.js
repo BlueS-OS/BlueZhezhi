@@ -1,10 +1,10 @@
 /**
- * mp4.js — Parser y sellador de contenedores MP4 (BlueZhezhi).
+ * mp4.js — Parser y sellador de contenedores MP4 (BlueZhezhi / BluePhrolova).
  *
  * No recodifica nada: reescribe la estructura de átomos (boxes) del archivo.
  * Dos modos:
  *   - safe:   faststart, timestamps a cero, idioma, color bt709, limpieza de
- *             metadatos de procedencia (C2PA/uuid) y firma BlueZhezhi.
+ *             metadatos de procedencia (C2PA/uuid) y firma del taller.
  *   - compat: además aplica el descuadre deliberado de tablas (handlers
  *             renombrados, edit list vacía, muestras fantasma) que impide que
  *             la plataforma rebaje la resolución. Puede producir archivos que
@@ -36,6 +36,7 @@ const DEFAULTS = {
   tagOutput: true,
   tagName: "BlueZhezhi",
   tagComment: "BlueZhezhi",
+  handlerName: "BlueZhezhi-coded",
   forceBt709: true,
 };
 
@@ -43,8 +44,6 @@ const COMPAT_TAGS = {
   tagName: "BlueZhezhi-v2.0.3",
   tagComment: "BlueZhezhi",
 };
-
-const COMPAT_HANDLER = "BlueZhezhi-coded";
 
 /* ------------------------------------------------------------------ */
 /* utilidades de bytes                                                 */
@@ -569,10 +568,10 @@ export function patchMp4(input, userOptions = {}) {
   if (opts.forceBt709) report.colorTagged = addColorTag(video);
 
   if (compat) {
-    setHandlerName(video, COMPAT_HANDLER);
+    setHandlerName(video, opts.handlerName);
     setCompressorName(video, opts.tagName);
     if (audio) {
-      setHandlerName(audio, COMPAT_HANDLER);
+      setHandlerName(audio, opts.handlerName);
     }
 
     // Edit list de vídeo: anteponer un edit vacío (16 ticks) si ya existía.

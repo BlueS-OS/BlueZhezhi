@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Phrolova">
+  <rect width="64" height="64" rx="10" fill="#0c0a0b"/>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="7.5" fill="none" stroke="#b08d57" stroke-opacity="0.45" stroke-width="1"/>
+  <g fill="#b12b34">
+    <ellipse cx="32" cy="23" rx="5.2" ry="13" transform="rotate(0 32 32)"/>
+    <ellipse cx="32" cy="23" rx="5.2" ry="13" transform="rotate(72 32 32)"/>
+    <ellipse cx="32" cy="23" rx="5.2" ry="13" transform="rotate(144 32 32)"/>
+    <ellipse cx="32" cy="23" rx="5.2" ry="13" transform="rotate(216 32 32)"/>
+    <ellipse cx="32" cy="23" rx="5.2" ry="13" transform="rotate(288 32 32)"/>
+  </g>
+  <g stroke="#efe4d9" stroke-width="1.8" stroke-linecap="round">
+    <path d="M32 33 L32 12"/>
+    <path d="M32 33 L25 15"/>
+    <path d="M32 33 L39 15"/>
+  </g>
+  <circle cx="32" cy="33" r="3.6" fill="#efe4d9"/>
+</svg>

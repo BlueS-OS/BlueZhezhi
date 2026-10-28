@@ -1,6 +1,18 @@
 import { inspectMp4, patchMp4, verifyMp4, Mp4Error } from "./mp4.js";
 import { convertToMp4 } from "./ffmpeg.js";
 
+/* Cada página puede ajustar su propia identidad sin duplicar la lógica:
+   phrolova/index.html define window.__BZ__ antes de cargar este módulo. */
+const PAGE = (typeof window !== "undefined" && window.__BZ__) || {};
+const CONFIG = {
+  runLabel: "Sellar el vídeo",
+  busyLabel: "Sellando…",
+  suffix: "zhezhi",
+  signatureLabel: "BlueZhezhi",
+  ...PAGE,
+};
+if (typeof window !== "undefined") window.__BZ_EFFECTIVE__ = CONFIG;
+
 const $ = (id) => document.getElementById(id);
 
 const els = {
@@ -80,7 +92,7 @@ function setError(message) {
 function setBusy(busy) {
   state.busy = busy;
   els.run.disabled = busy || !state.file;
-  els.run.textContent = busy ? "Sellando…" : "Sellar el vídeo";
+  els.run.textContent = busy ? CONFIG.busyLabel : CONFIG.runLabel;
   els.drop.style.pointerEvents = busy ? "none" : "";
   if (!busy) els.progress.hidden = true;
 }
@@ -175,6 +187,11 @@ async function processFile() {
     ghostSamples: Number(els.ghost.value) || 0,
     tagOutput: els.tag.checked,
   };
+  if (CONFIG.tagName) {
+    options.tagName = CONFIG.tagName;
+    options.tagComment = CONFIG.tagComment ?? CONFIG.tagName;
+    options.handlerName = CONFIG.handlerName ?? `${options.tagComment}-coded`;
+  }
 
   setError(null);
   els.result.hidden = true;
@@ -230,7 +247,7 @@ function showResult({ bytes, report }, verification, converted) {
 
   const baseName = (state.file?.name ?? "video").replace(/\.[^.]+$/, "") || "video";
   els.download.href = state.url;
-  els.download.download = `${baseName}_zhezhi.mp4`;
+  els.download.download = `${baseName}_${CONFIG.suffix}.mp4`;
 
   const info = verification.info;
   const method =
@@ -281,7 +298,7 @@ function showResult({ bytes, report }, verification, converted) {
     );
   }
   if (els.tag.checked) {
-    changes.push("Firma BlueZhezhi escrita en udta/meta/ilst (©too, ©cmt, ©cprt).");
+    changes.push(`Firma ${CONFIG.signatureLabel} escrita en udta/meta/ilst (©too, ©cmt, ©cprt).`);
   }
   changes.push("Cajas de procedencia (uuid/C2PA/xml/sdtp) eliminadas del interior de moov.");
 

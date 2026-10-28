@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phrolova · gabinete de partituras</title>
+    <link rel="icon" href="../assets/favicon-phrolova.svg" type="image/svg+xml" />
+    <link rel="icon" href="../assets/favicon-phrolova-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon-phrolova.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./">
+        <span class="brand-mark" aria-hidden="true">洛</span>
+        <span class="brand-text">
+          <strong>Phrolova</strong>
+          <em>gabinete de partituras</em>
+        </span>
+      </a>
+      <nav class="topbar-side">
+        <a class="switch" href="../">折 Zhezhi</a>
+        <span class="badge">local · sin servidor</span>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">cuerda · compás · sello</p>
+        <h1>Que nadie<br />desafine tu obra.</h1>
+        <p class="lede">
+          Phrolova reescribe el contenedor de tu vídeo con la misma estructura que la
+          herramienta original, para que la plataforma lo publique tal como lo compusiste:
+          sin bajar la resolución. Todo ocurre en tu navegador.
+        </p>
+
+        <figure class="quote">
+          <blockquote>
+            «La obra se escucha tal como fue escrita. Ni una nota menos.»
+          </blockquote>
+          <figcaption>— el gabinete de partituras</figcaption>
+        </figure>
+
+        <ul class="facts">
+          <li><strong>Sin recomprimir</strong> si ya es H.264/HEVC</li>
+          <li><strong>Mismo descuadre</strong> de tablas que el original</li>
+          <li><strong>Nada sale</strong> de tu equipo</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="steps" aria-hidden="true">
+          <span class="step is-active"><b>1</b> Preludio</span>
+          <span class="step"><b>2</b> Fuga</span>
+          <span class="step"><b>3</b> Cadencia</span>
+        </div>
+
+        <div id="drop" class="drop" tabindex="0" role="button" aria-label="Elegir vídeo">
+          <input id="file" type="file" accept="video/*,.mp4,.mov,.mkv,.webm,.m4v" hidden />
+          <svg class="lily" viewBox="0 0 64 64" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M32 34c-6-2-10-7-11-13 5 1 9 5 11 10" />
+              <path d="M32 34c6-2 10-7 11-13-5 1-9 5-11 10" />
+              <path d="M32 36c-7 1-13-1-18-6 5-3 12-2 18 2" />
+              <path d="M32 36c7 1 13-1 18-6-5-3-12-2-18 2" />
+              <path d="M32 38c-4 5-5 11-3 17 4-4 5-10 3-17" />
+              <path d="M32 38c4 5 5 11 3 17-4-4-5-10-3-17" />
+              <path d="M32 36c-1-8-4-14-9-18" />
+              <path d="M32 36c1-8 4-14 9-18" />
+            </g>
+            <circle cx="32" cy="36" r="2.4" fill="currentColor" stroke="none" />
+          </svg>
+          <p class="drop-title">Deja el vídeo sobre el atril</p>
+          <p class="drop-sub">o haz clic para buscarlo · MP4, MOV, MKV, WebM…</p>
+        </div>
+
+        <div id="fileInfo" class="file-info" hidden>
+          <dl>
+            <div><dt>Archivo</dt><dd id="fName">—</dd></div>
+            <div><dt>Tamaño</dt><dd id="fSize">—</dd></div>
+            <div><dt>Duración</dt><dd id="fDur">—</dd></div>
+            <div><dt>Contenedor</dt><dd id="fKind">—</dd></div>
+          </dl>
+          <button id="clear" class="ghost-btn" type="button">Retirar</button>
+        </div>
+
+        <div class="options">
+          <label class="field">
+            <span>Modo</span>
+            <select id="mode">
+              <option value="compat" selected>Sello Phrolova — efecto original</option>
+              <option value="safe">Papel limpio — normalización estándar</option>
+            </select>
+          </label>
+
+          <label class="field" id="ghostField" hidden>
+            <span>Muestras fantasma</span>
+            <input id="ghost" type="number" min="0" max="50000" step="1" value="9112" />
+          </label>
+
+          <label class="check">
+            <input id="tag" type="checkbox" checked />
+            <span>Firmar la salida con el nombre del gabinete</span>
+          </label>
+        </div>
+
+        <p id="modeNote" class="note" hidden>
+          El papel limpio deja las tablas intactas: el archivo es válido y la plataforma
+          lo recomprime con normalidad. Bajará la resolución.
+        </p>
+        <p id="compatNote" class="note warn" hidden>
+          Aplica el mismo descuadre de tablas que el archivo de referencia, verificado
+          contra él. Deja las tablas de muestras inconsistentes a propósito: es lo que
+          impide que la plataforma rebaje la resolución. En el navegador se reproduce
+          igual. Riesgo: puede quedarse en «procesando».
+        </p>
+        <p class="note faint" id="tagNote" hidden>
+          La firma que quedará en el MP4 es <code>BluePhrolova-v2.0.3</code>. Es lo que
+          verás en MediaInfo como aplicación de escritura.
+        </p>
+
+        <button id="run" class="primary" type="button" disabled>
+          Sellar la partitura
+        </button>
+
+        <div id="error" class="error" hidden></div>
+      </section>
+
+      <section id="progress" class="card progress" hidden aria-live="polite">
+        <div class="progress-head">
+          <span id="stage">Leyendo el archivo</span>
+          <span id="pct">0%</span>
+        </div>
+        <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+        <ol id="stages" class="stage-list"></ol>
+      </section>
+
+      <section id="result" class="card result" hidden aria-live="polite">
+        <div class="result-head">
+          <div class="result-copy">
+            <p class="eyebrow">sellado</p>
+            <h2 id="rTitle">Partitura sellada</h2>
+            <p id="rMeta" class="muted"></p>
+          </div>
+          <div class="result-side">
+            <span class="seal" aria-hidden="true">音</span>
+            <a id="download" class="primary" download>Descargar MP4</a>
+          </div>
+        </div>
+
+        <dl class="report" id="report"></dl>
+
+        <details class="details">
+          <summary>Qué se ha trazado</summary>
+          <ul id="changes"></ul>
+        </details>
+      </section>
+
+      <section class="card caveat">
+        <h2>Antes de sellar</h2>
+        <p>
+          El sello no «mejora» el vídeo: deja el contenedor MP4
+          <strong>inconsistente a propósito</strong> para que el transcoder de la
+          plataforma no pueda rebajarlo. Es la misma estructura del archivo de
+          referencia, comprobada contra él.
+        </p>
+        <p class="note warn" style="margin-top: 14px">
+          Si necesitas publicar con seguridad, usa <strong>Papel limpio</strong>: ahí sí
+          recomprime, pero el archivo es válido.
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-mark"><span>洛</span> Phrolova · gabinete de partituras</p>
+      <p class="muted">
+        Herramienta local, sin backend · no afiliada a Kuro Games ni a TikTok.
+      </p>
+    </footer>
+
+    <script>
+      window.__BZ__ = {
+        tagName: "BluePhrolova-v2.0.3",
+        tagComment: "BluePhrolova",
+        signatureLabel: "BluePhrolova",
+        suffix: "phrolova",
+        runLabel: "Sellar la partitura",
+        busyLabel: "Sellando…",
+      };
+    </script>
+    <script type="module" src="../src/app.js"></script>
+  </body>
+</html>
