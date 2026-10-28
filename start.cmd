@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo.
-echo   BlueZhezhi - taller de tinta
+echo   Zhezhi - taller de tinta
 echo   http://localhost:5173
 echo.
 start "" "http://localhost:5173/"

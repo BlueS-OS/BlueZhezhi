@@ -1,4 +1,7 @@
-# BlueZhezhi · taller de tinta
+# Zhezhi · taller de tinta
+
+> La interfaz se llama **Zhezhi**. El nombre **BlueZhezhi** solo aparece dentro del
+> MP4, como firma de los metadatos (`©too`, `©cmt`, `©cprt` y handler).
 
 Utilidad **local** que reescribe el contenedor de un MP4 antes de subirlo a TikTok.
 No recodifica si el vídeo ya es H.264/HEVC: trabaja a nivel de átomos (boxes).
@@ -10,7 +13,7 @@ ti, solo **protege el trazo** para que la plataforma no lo repinte.
 **En línea:** <https://blues-os.github.io/BlueZhezhi/> · **En local:** `.\start.cmd`
 (la versión local funciona sin conexión y sin depender de nadie).
 
-![Interfaz de BlueZhezhi: papel de jade, tinta y sellos bermellón](docs/preview.png)
+![Interfaz de Zhezhi: papel de jade, tinta y sellos bermellón](docs/preview.png)
 
 > **Aviso honesto:** el modo sello deja el MP4 inconsistente a propósito. Funciona
 > hoy y con el archivo de referencia que se comparó, pero depende de cómo valide
@@ -51,7 +54,7 @@ vídeo nunca sale del navegador.
 
 1. Arrastra un vídeo (MP4, MOV, MKV, WebM…).
 2. Elige modo:
-   - **Sello BlueZhezhi** (por defecto): aplica el descuadre de tablas que provoca
+   - **Sello Zhezhi** (por defecto): aplica el descuadre de tablas que provoca
      el efecto. Es el modo que impide que la plataforma rebaje la resolución.
    - **Papel limpio**: solo normaliza el contenedor, sin descuadrar tablas. Úsalo si
      el vídeo tiene que publicarse sí o sí.
@@ -100,7 +103,7 @@ archivo
 | elimina `uuid`, `c2pa`, `xml `, `sdtp`, `free` dentro de `moov` | quita procedencia y basura |
 | `udta/meta/ilst` propio | firma la salida |
 
-### Sello BlueZhezhi
+### Sello Zhezhi
 
 Añade a lo anterior:
 
@@ -173,7 +176,7 @@ zhezhi/
 │  ├─ mp4.js           parser, sellador y verificador de MP4
 │  ├─ ffmpeg.js        wrapper de FFmpeg.wasm + fallback remux/transcode
 │  ├─ app.js           lógica de la UI
-│  └─ styles.css       paleta BlueZhezhi (papel de jade, tinta, bermellón)
+│  └─ styles.css       paleta Zhezhi (papel de jade, tinta, bermellón)
 ├─ vendor/
 │  ├─ worker.js        worker de @ffmpeg/ffmpeg 0.12.10 (mismo origen)
 │  ├─ const.js
