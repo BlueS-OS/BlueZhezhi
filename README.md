@@ -7,6 +7,9 @@ El nombre viene de Zhezhi (折枝), la pintora por encargo de *Wuthering Waves*:
 de jade blanco, tinta, malaquita, azurita y bermellón. El taller no pinta nada por
 ti, solo **protege el trazo** para que la plataforma no lo repinte.
 
+**En línea:** <https://blues-os.github.io/BlueZhezhi/> · **En local:** `.\start.cmd`
+(la versión local funciona sin conexión y sin depender de nadie).
+
 > **Aviso honesto:** el modo sello deja el MP4 inconsistente a propósito. Funciona
 > hoy y con el archivo de referencia que se comparó, pero depende de cómo valide
 > TikTok ese día: puede quedarse en «procesando» para siempre o ser rechazado. Si
@@ -263,3 +266,13 @@ Herramienta local, sin backend, pensada para preparar un MP4 antes de subirlo a
 TikTok. El modo sello reproduce el descuadre de tablas de los archivos que sí
 conservan la resolución en la plataforma; el modo Papel limpio deja el contenedor
 válido y se comporta como cualquier subida normal.
+
+---
+
+## Licencia
+
+MIT. Haz lo que quieras con el código, pero sin garantía: el modo sello crea
+archivos deliberadamente inconsistentes y la plataforma puede rechazarlos.
+
+No está afiliado a Kuro Games, *Wuthering Waves* ni TikTok. Zhezhi y *Wuthering
+Waves* son propiedad de Kuro Games; este proyecto es un homenaje no oficial.
