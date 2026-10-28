@@ -132,7 +132,7 @@ archivo
 | elimina `uuid`, `c2pa`, `xml `, `sdtp`, `free` dentro de `moov` | quita procedencia y basura |
 | `udta/meta/ilst` propio | firma la salida |
 
-### Sello Zhezhi
+### Sello Zhezhi / Sello Phrolova
 
 Añade a lo anterior:
 
