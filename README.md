@@ -10,7 +10,7 @@ El nombre viene de Zhezhi (折枝), la pintora por encargo de *Wuthering Waves*:
 de jade blanco, tinta, malaquita, azurita y bermellón. El taller no pinta nada por
 ti, solo **protege el trazo** para que la plataforma no lo repinte.
 
-**En línea:** <https://blues-os.github.io/BlueZhezhi/> · **En local:** `.\start.cmd`
+**En línea:** <https://blues-os.github.io/ZhezhiUploader/> · **En local:** `.\start.cmd`
 (la versión local funciona sin conexión y sin depender de nadie).
 
 ![Interfaz de Zhezhi: papel de jade, tinta y sellos bermellón](docs/preview.png)
