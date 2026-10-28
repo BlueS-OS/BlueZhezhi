@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Análisis de estructura MP4</title>
+    <style>
+      body { font-family: ui-monospace, Consolas, monospace; background: #060708; color: #d9d9d4; padding: 20px; font-size: 12px; }
+      h1 { color: #35e6e0; font-size: 16px; }
+      h2 { color: #35e6e0; font-size: 14px; margin-top: 26px; border-top: 1px solid #23282b; padding-top: 14px; }
+      pre { background: #0c0e0f; border: 1px solid #23282b; padding: 12px; overflow: auto; white-space: pre-wrap; }
+      .k { color: #8b938f; }
+      .v { color: #e9e7e2; }
+    </style>
+  </head>
+  <body>
+    <h1>Análisis de estructura</h1>
+    <div id="out">Cargando…</div>
+
+    <script type="module">
+      import { parseMp4, inspectMp4 } from "../src/mp4.js";
+
+      const FILES = [
+        "tiktok-4k.mp4",
+        "ref-served.mp4",
+        "tiktok-clone.mp4",
+        "old-safe-upload.mp4",
+        "wuwa-source.mp4",
+        "wuwa-reference.mp4",
+      ];
+
+      const out = document.getElementById("out");
+      out.textContent = "";
+
+      const u16 = (b, o) => (b[o] << 8) | b[o + 1];
+      const u32 = (b, o) => ((b[o] << 24) | (b[o + 1] << 16) | (b[o + 2] << 8) | b[o + 3]) >>> 0;
+      const text = (b, o, n) => String.fromCharCode(...b.subarray(o, o + n));
+      const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, "0")).join(" ");
+
+      const child = (box, type) => box?.children?.find((c) => c.type === type);
+      const path = (box, ...types) => types.reduce((cur, t) => child(cur, t), box);
+      const all = (box, type, acc = []) => {
+        if (box.type === type) acc.push(box);
+        for (const c of box.children ?? []) all(c, type, acc);
+        return acc;
+      };
+      const hdlrName = (trak) => {
+        const h = path(trak, "mdia", "hdlr");
+        if (!h) return "";
+        const raw = h.payload.subarray(24);
+        const end = raw.indexOf(0);
+        return text(raw, 0, end < 0 ? raw.length : end);
+      };
+      const codecOf = (trak) => {
+        const s = path(trak, "mdia", "minf", "stbl", "stsd");
+        return s ? text(s.payload, 12, 4) : "";
+      };
+      const compressorOf = (trak) => {
+        const s = path(trak, "mdia", "minf", "stbl", "stsd");
+        if (!s || s.payload.length < 90) return "";
+        const len = Math.min(s.payload[58], 31);
+        return text(s.payload, 59, len);
+      };
+      const langOf = (trak) => {
+        const m = path(trak, "mdia", "mdhd");
+        if (!m) return "";
+        const at = m.payload[0] === 1 ? 32 : 20;
+        const v = u16(m.payload, at);
+        return String.fromCharCode(0x60 + (v >> 10), 0x60 + ((v >> 5) & 31), 0x60 + (v & 31));
+      };
+      const sttsInfo = (trak) => {
+        const s = path(trak, "mdia", "minf", "stbl", "stts");
+        if (!s) return null;
+        const n = u32(s.payload, 4);
+        let samples = 0, ticks = 0;
+        const entries = [];
+        for (let i = 0; i < Math.min(n, 6); i++) {
+          const c = u32(s.payload, 8 + i * 8), d = u32(s.payload, 12 + i * 8);
+          entries.push([c, d]); samples += c; ticks += c * d;
+        }
+        let total = samples;
+        for (let i = 6; i < n; i++) total += u32(s.payload, 8 + i * 8);
+        const mdhd = path(trak, "mdia", "mdhd");
+        const ts = mdhd ? u32(mdhd.payload, mdhd.payload[0] === 1 ? 20 : 12) : 0;
+        return { entries: n, samples: total, seconds: ts ? ticks / ts : 0, first: entries, last: n > 6 ? [u32(s.payload, 8 + (n - 1) * 8), u32(s.payload, 12 + (n - 1) * 8)] : null };
+      };
+      const stszInfo = (trak) => {
+        const s = path(trak, "mdia", "minf", "stbl", "stsz");
+        if (!s) return null;
+        return { constant: u32(s.payload, 4), count: u32(s.payload, 8), first: u32(s.payload, 12) };
+      };
+      const stscInfo = (trak) => {
+        const s = path(trak, "mdia", "minf", "stbl", "stsc");
+        if (!s) return null;
+        const n = u32(s.payload, 4);
+        return { entries: n, last: n ? [u32(s.payload, 8 + (n - 1) * 12), u32(s.payload, 12 + (n - 1) * 12), u32(s.payload, 16 + (n - 1) * 12)] : null };
+      };
+      const stcoInfo = (trak) => {
+        const s = [...all(trak, "stco"), ...all(trak, "co64")][0];
+        if (!s) return null;
+        const n = u32(s.payload, 4);
+        const vals = [];
+        for (let i = 0; i < Math.min(n, 3); i++) vals.push(u32(s.payload, 8 + i * 4));
+        return { type: s.type, count: n, first: vals, last: n > 3 ? u32(s.payload, 8 + (n - 1) * 4) : null };
+      };
+      const elstInfo = (trak) => {
+        const e = path(trak, "edts", "elst");
+        if (!e) return null;
+        const v = e.payload[0], size = v === 1 ? 20 : 12, n = u32(e.payload, 4);
+        return { version: v, entries: n, first: hex(e.payload.subarray(8, 8 + size)) };
+      };
+
+      for (const name of FILES) {
+        try {
+          const res = await fetch(name);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const bytes = new Uint8Array(await res.arrayBuffer());
+          const { boxes } = parseMp4(bytes);
+          const info = inspectMp4(bytes);
+          const moov = boxes.find((b) => b.type === "moov");
+          const mdat = boxes.find((b) => b.type === "mdat");
+          const ftyp = boxes.find((b) => b.type === "ftyp");
+          const traks = moov.children.filter((b) => b.type === "trak");
+          const handlerType = (trak) => {
+            const h = path(trak, "mdia", "hdlr");
+            return h ? text(h.payload, 8, 4) : "";
+          };
+          const video = traks.find((t) => handlerType(t) === "vide");
+          const audio = traks.find((t) => handlerType(t) === "soun");
+
+          const data = {
+            archivo: name,
+            bytes: bytes.length,
+            inspeccion: info,
+            top: boxes.map((b) => `${b.type}:${b.size}`).join("  "),
+            ftyp: ftyp ? { major: text(ftyp.payload, 0, 4), minor: u32(ftyp.payload, 4), compat: text(ftyp.payload, 8, ftyp.payload.length - 8).match(/.{4}/g) } : null,
+            moovBytes: moov?.size,
+            mdatBytes: mdat?.size,
+            moovAntesDeMdat: boxes.indexOf(moov) < boxes.indexOf(mdat),
+            udtaEnMoov: Boolean(child(moov, "udta")),
+            textoUdta: (() => {
+              const u = child(moov, "udta");
+              if (!u) return null;
+              return text(u.payload, 0, u.payload.length).replace(/[^\x20-\x7e]+/g, " ").trim();
+            })(),
+            video: video ? {
+              handler: hdlrName(video),
+              codec: codecOf(video),
+              compressor: compressorOf(video),
+              language: langOf(video),
+              stts: sttsInfo(video),
+              stsz: stszInfo(video),
+              stsc: stscInfo(video),
+              stco: stcoInfo(video),
+              elst: elstInfo(video),
+              color: (() => {
+                const s = path(video, "mdia", "minf", "stbl", "stsd");
+                return s ? { colr: s.payload.join(",").includes("99,111,108,114"), mdcv: s.payload.join(",").includes("109,100,99,118") } : null;
+              })(),
+            } : null,
+            audio: audio ? {
+              handler: hdlrName(audio),
+              codec: codecOf(audio),
+              compressor: compressorOf(audio),
+              language: langOf(audio),
+              stts: sttsInfo(audio),
+              stsz: stszInfo(audio),
+              stco: stcoInfo(audio),
+              elst: elstInfo(audio),
+            } : null,
+          };
+
+          const tree = (box, depth = 0) => {
+            const label = `${"  ".repeat(depth)}${box.type} ${box.size}`;
+            const kids = box.children ? box.children.flatMap((c) => tree(c, depth + 1)) : [];
+            return [label, ...kids];
+          };
+          data.arbol = boxes.flatMap((b) => tree(b));
+          data.mdatOffset = mdat ? mdat.payloadStart : null;
+          data.moovOffset = moov ? moov.start : null;
+
+          const h = document.createElement("h2");
+          h.textContent = `${name} · ${(bytes.length / 1e6).toFixed(2)} MB`;
+          const pre = document.createElement("pre");
+          pre.textContent = JSON.stringify(data, null, 2);
+          out.append(h, pre);
+          (window.__results ??= []).push(data);
+        } catch (error) {
+          const h = document.createElement("h2");
+          h.textContent = `${name} · ERROR`;
+          const pre = document.createElement("pre");
+          pre.textContent = `${error.name}: ${error.message}`;
+          out.append(h, pre);
+        }
+      }
+    </script>
+  </body>
+</html>
