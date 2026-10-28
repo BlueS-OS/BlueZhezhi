@@ -1,4 +1,4 @@
-# Zhezhi · taller de tinta
+# Zhezhi Uploader · taller de tinta
 
 > La interfaz se llama **Zhezhi**. El nombre **BlueZhezhi** solo aparece dentro del
 > MP4, como firma de los metadatos (`©too`, `©cmt`, `©cprt` y handler).
