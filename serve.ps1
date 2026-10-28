@@ -33,7 +33,7 @@ $mime = @{
 }
 
 Write-Host ""
-Write-Host "  Zhezhi - taller de tinta" -ForegroundColor Red
+Write-Host "  BlueZhezhi - taller de tinta" -ForegroundColor Red
 Write-Host "  $prefix" -ForegroundColor DarkCyan
 Write-Host "  Ctrl+C para parar" -ForegroundColor DarkGray
 Write-Host ""
