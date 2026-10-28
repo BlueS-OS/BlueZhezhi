@@ -10,6 +10,8 @@ ti, solo **protege el trazo** para que la plataforma no lo repinte.
 **En línea:** <https://blues-os.github.io/BlueZhezhi/> · **En local:** `.\start.cmd`
 (la versión local funciona sin conexión y sin depender de nadie).
 
+![Interfaz de BlueZhezhi: papel de jade, tinta y sellos bermellón](docs/preview.png)
+
 > **Aviso honesto:** el modo sello deja el MP4 inconsistente a propósito. Funciona
 > hoy y con el archivo de referencia que se comparó, pero depende de cómo valide
 > TikTok ese día: puede quedarse en «procesando» para siempre o ser rechazado. Si
@@ -163,6 +165,8 @@ que el sello parece evitar es el *downscale*, no necesariamente el *transcode*.
 ```
 zhezhi/
 ├─ index.html          UI (papel y tinta)
+├─ assets/             favicon SVG + PNG y apple-touch-icon
+├─ docs/               captura de pantalla usada en este README
 ├─ serve.ps1           servidor estático (HttpListener, sin dependencias)
 ├─ start.cmd           arranque + abrir navegador
 ├─ src/
