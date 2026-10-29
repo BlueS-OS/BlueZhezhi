@@ -6,6 +6,9 @@
 > Hay una segunda piel, **Phrolova · gabinete de partituras**, en `/phrolova/`.
 > Comparte motor y garantías; cambia la paleta, los textos y la firma que escribe
 > en el MP4 (**BluePhrolova**).
+>
+> La tercera, **Chisa · taller de hilos**, vive en su propio repositorio:
+> <https://blues-os.github.io/BlueChisa/>. Mismo motor, firma **BlueChisa**.
 
 Utilidad **local** que reescribe el contenedor de un MP4 antes de subirlo a TikTok.
 No recodifica si el vídeo ya es H.264/HEVC: trabaja a nivel de átomos (boxes).
